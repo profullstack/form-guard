@@ -1,5 +1,15 @@
 export type GuardAction = 'accept' | 'flag' | 'drop' | 'retry' | 'limited';
 
+/**
+ * Anything the guard can read a header from: a real `Headers`, a plain
+ * object of header values, or any structural getter -- which is what a
+ * framework's own request type usually narrows to.
+ */
+export type HeaderSource =
+  | Headers
+  | { get(name: string): string | null }
+  | Record<string, string | undefined>;
+
 export declare const ACTIONS: Readonly<{
   ACCEPT: 'accept';
   FLAG: 'flag';
@@ -58,7 +68,7 @@ export interface Verdict {
 
 export interface CheckInput {
   fields: Record<string, unknown>;
-  headers?: Headers | Record<string, string | undefined> | null;
+  headers?: HeaderSource | null;
   ip?: string | null;
   now?: number;
 }
@@ -109,12 +119,8 @@ export declare function scoreSubmission(
   options?: { flagAt?: number; brandTerms?: string[] },
 ): { score: number; signals: string[]; suspicious: boolean };
 
-export declare function clientIp(
-  headers: Headers | Record<string, string | undefined>,
-): string | null;
-export declare function userAgent(
-  headers: Headers | Record<string, string | undefined>,
-): string | null;
+export declare function clientIp(headers: HeaderSource): string | null;
+export declare function userAgent(headers: HeaderSource): string | null;
 
 export declare function tagSubject(
   subject: string,
