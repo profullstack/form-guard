@@ -1,0 +1,63 @@
+{
+  "name": "@profullstack/form-guard",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Stops contact-form spam at the door with a signed proof-of-render token, a honeypot, a fill-time floor and per-IP rate limiting, then scores whatever survives so a human can filter it. Renders no markup, has no dependencies and runs on Node, Bun, Deno, Cloudflare Workers and the edge.",
+  "keywords": [
+    "spam",
+    "antispam",
+    "contact-form",
+    "form",
+    "honeypot",
+    "rate-limit",
+    "hmac",
+    "csrf",
+    "bot",
+    "captcha-alternative",
+    "nextjs",
+    "sveltekit",
+    "hono",
+    "express",
+    "edge"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/profullstack/form-guard.git"
+  },
+  "homepage": "https://github.com/profullstack/form-guard#readme",
+  "bugs": {
+    "url": "https://github.com/profullstack/form-guard/issues"
+  },
+  "license": "MIT",
+  "author": "Profullstack, Inc.",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./index.d.ts",
+  "files": [
+    "src",
+    "index.js",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "bun test",
+    "lint": "bun run --bun biome check .",
+    "format": "bun run --bun biome format --write ."
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.0"
+  }
+}
