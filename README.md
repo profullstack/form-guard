@@ -150,6 +150,39 @@ window of silence.
 Pass a `store` with `take(key, windowMs, now)` and `reset(key)` to back it
 with Redis or a Durable Object when you run more than one instance.
 
+## Submission campaigns (directories, listings, sign-up sheets)
+
+Everything above judges one request. A submission campaign passes all of it: it
+renders the form, fills it at human speed and sends something plausible. What
+gives it away is the run: one caller posting a different product a minute,
+alphabetically through domains it registered, each with a fresh
+`hello@<that-domain>` contact so a per-email limit never fires.
+
+```js
+import { createCampaignDetector } from '@profullstack/form-guard';
+
+const campaigns = createCampaignDetector(); // 30 min window, 5 domains/IP, 8 global
+
+const verdict = await campaigns.observe({ ip, email, url, name });
+if (verdict.level === 'ban') return new Response('Forbidden', { status: 403 }); // let ThreatCrush see it
+if (verdict.level === 'hold') markForReview(); // accept, keep out of auto-approval
+```
+
+**Shape never acts alone.** A role address at the listed domain
+(`hello@mycompany.com` listing `mycompany.com`) is how real founders sign up, so
+it is only a signal. What acts is volume:
+
+| level | when |
+|---|---|
+| `ban` | one address submits `ipDomains` (5) different domains inside the window, or repeats the pattern while a campaign is running |
+| `hold` | `campaignThreshold` (8) pattern matches across all addresses inside the window (a proxy rotation) and this address has no history |
+| `ok` | everything else |
+
+Answer `ban` with a 4xx your edge logs: a 200 "silent drop" is invisible to a
+log-reading banner like ThreatCrush. Pass a shared `store`
+(`{ push(key, value, windowMs, now), reset(key?) }`) to hold the window across
+instances.
+
 ## What this does not do
 
 It does not stop a human being paid to fill in your form, and it does not
