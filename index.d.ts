@@ -134,3 +134,48 @@ export declare function provenanceBlock(input?: {
   verdict?: Partial<Verdict> | null;
   submittedAt?: Date;
 }): string;
+
+export type CampaignLevel = 'ok' | 'hold' | 'ban';
+
+export interface CampaignStore {
+  push(key: string, value: unknown, windowMs: number, now: number): Promise<{ t: number; v: any }[]>;
+  reset(key?: string): Promise<void>;
+}
+
+export interface CampaignDetectorOptions {
+  /** Window every count is taken over, in ms. Default 30 minutes. */
+  windowMs?: number;
+  /** Distinct domains from one address inside the window that mean a run (ban). Default 5. */
+  ipDomains?: number;
+  /** Role-address-at-own-domain submissions across ALL addresses that mean a campaign. Default 8. */
+  campaignThreshold?: number;
+  roles?: readonly string[];
+  store?: CampaignStore;
+}
+
+export interface CampaignSubmission {
+  ip?: string;
+  email?: string;
+  url?: string;
+  name?: string;
+}
+
+export interface CampaignVerdict {
+  /** ban: answer with a 4xx your edge bans on. hold: accept, keep out of auto-approval. */
+  level: CampaignLevel;
+  signals: string[];
+  ipSubmissions: number;
+  ipDomains: number;
+  campaignCount: number;
+}
+
+export interface CampaignDetector {
+  observe(submission: CampaignSubmission, now?: number): Promise<CampaignVerdict>;
+  store: CampaignStore;
+}
+
+export declare const ROLE_LOCAL_PARTS: readonly string[];
+export declare function createCampaignDetector(options?: CampaignDetectorOptions): CampaignDetector;
+export declare function createCampaignMemoryStore(options?: { maxKeys?: number }): CampaignStore;
+export declare function hostOf(url: string | null | undefined): string;
+export declare function isOwnDomainRoleAddress(email: string, url: string, roles?: readonly string[]): boolean;

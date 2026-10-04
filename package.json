@@ -1,6 +1,6 @@
 {
   "name": "@profullstack/form-guard",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "description": "Stops contact-form spam at the door with a signed proof-of-render token, a honeypot, a fill-time floor and per-IP rate limiting, then scores whatever survives so a human can filter it. Renders no markup, has no dependencies and runs on Node, Bun, Deno, Cloudflare Workers and the edge.",
   "keywords": [
