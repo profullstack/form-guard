@@ -183,6 +183,35 @@ log-reading banner like ThreatCrush. Pass a shared `store`
 (`{ push(key, value, windowMs, now), reset(key?) }`) to hold the window across
 instances.
 
+### Banning with ThreatCrush
+
+ThreatCrush reads the nginx log, so the 403 is what it bans on. Drop a rule like
+this in `/etc/threatcrush/rules.d/` and restart the daemon
+(`systemctl restart threatcrushd`; rules load only at start). Match the method
+too: a 403 on GET/PATCH of the same path may be a person with a stale link.
+
+```json
+[{
+  "id": "submission-campaign-403",
+  "title": "Listing Submission Campaign Refused",
+  "description": "POST to a submission endpoint refused with 403 by form-guard's campaign detector",
+  "version": "1.0.0", "category": "web", "severity": "high",
+  "source_types": ["log-watcher", "web"],
+  "match": {
+    "field": "message", "operator": "regex",
+    "value": "^Client error 403: POST /api/fn/submissions\\b",
+    "and": [{ "field": "host", "operator": "regex", "value": "^(www\\.)?saasrow\\.com$" }]
+  },
+  "threshold": 1, "window_seconds": 3600, "cooldown_seconds": 3600,
+  "tags": ["web", "abuse", "submission-campaign", "form-guard"],
+  "remediation": { "action": "block", "description": "Ban an address running a submission campaign" },
+  "enabled": true
+}]
+```
+
+Add a site by widening the `host` and path regexes. Do not test it from a box
+the rule protects: five probes ban your own address.
+
 ## What this does not do
 
 It does not stop a human being paid to fill in your form, and it does not
