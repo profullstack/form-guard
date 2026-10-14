@@ -80,6 +80,16 @@ const { token: t, honeypot } = guard.fields(token);
 Not using JSX? `guard.hiddenHTML(token)` returns both inputs as an
 escaped HTML fragment.
 
+**Strict CSP?** The fragment hides the honeypot with an inline `style`, and a
+`Content-Security-Policy` whose `style-src` lacks `'unsafe-inline'` blocks it.
+The field then shows up as a visible "Website" box, and the real people who
+fill it in are silently dropped. Pass a class and hide it from your stylesheet:
+
+```js
+guard.hiddenHTML(token, { className: 'hp-field' });
+// .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+```
+
 Check on submit:
 
 ```js
