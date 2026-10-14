@@ -79,7 +79,12 @@ export interface FormGuard {
     token: { name: string; value: string };
     honeypot: { name: string };
   };
-  hiddenHTML(token: string): string;
+  /**
+   * Both inputs as an escaped HTML fragment. The honeypot wrapper is hidden with an
+   * inline style unless `className` is given; under a CSP that blocks inline styles,
+   * pass a class and hide it from your stylesheet.
+   */
+  hiddenHTML(token: string, options?: { className?: string }): string;
   check(input: CheckInput): Promise<Verdict>;
   readonly config: Readonly<
     Required<Omit<FormGuardOptions, 'rateLimit'>> & {

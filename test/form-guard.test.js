@@ -283,6 +283,14 @@ describe('rendering', () => {
     expect(html).toContain('left:-9999px');
     expect(html).not.toContain('display:none');
   });
+
+  test('a class instead of the inline style, for a strict CSP', () => {
+    // style-src 'self' blocks the inline style and leaves the honeypot visible.
+    const html = guard().hiddenHTML('t', { className: 'hp "x"' });
+    expect(html).not.toContain('style=');
+    expect(html).toContain('class="hp &quot;x&quot;"');
+    expect(html).toContain('aria-hidden="true"');
+  });
 });
 
 describe('inbox annotation', () => {

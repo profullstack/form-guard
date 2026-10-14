@@ -76,8 +76,14 @@ export function createFormGuard(options = {}) {
     };
   }
 
-  /** The same inputs as an HTML fragment, for template-string views. */
-  function hiddenHTML(token) {
+  /**
+   * The same inputs as an HTML fragment, for template-string views. The honeypot is
+   * hidden with an inline style, which a Content-Security-Policy without
+   * 'unsafe-inline' in style-src blocks, leaving a visible "Website" box that real
+   * people fill in. Under such a CSP pass `className` and hide that class from your
+   * stylesheet instead.
+   */
+  function hiddenHTML(token, { className } = {}) {
     const escapeHtml = (s) =>
       String(s).replace(
         /[&<>"']/g,
@@ -92,7 +98,9 @@ export function createFormGuard(options = {}) {
       );
     return [
       `<input type="hidden" name="${escapeHtml(config.tokenField)}" value="${escapeHtml(token)}">`,
-      `<div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">`,
+      className
+        ? `<div aria-hidden="true" class="${escapeHtml(className)}">`
+        : `<div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">`,
       `<label>Website<input type="text" name="${escapeHtml(config.honeypotField)}" tabindex="-1" autocomplete="off"></label>`,
       `</div>`,
     ].join('');
