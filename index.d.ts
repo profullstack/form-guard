@@ -124,6 +124,13 @@ export declare function scoreSubmission(
   options?: { flagAt?: number; brandTerms?: string[] },
 ): { score: number; signals: string[]; suspicious: boolean };
 
+/**
+ * The message minus its contentless sentences ("I have a few questions about
+ * pricing...") and pleasantries ("Hello", "Thanks!"). Empty means it asked
+ * for nothing in particular.
+ */
+export declare function substance(message?: string): string;
+
 export declare function clientIp(headers: HeaderSource): string | null;
 export declare function userAgent(headers: HeaderSource): string | null;
 

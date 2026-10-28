@@ -5,6 +5,7 @@ import {
   createRateLimiter,
   provenanceBlock,
   scoreSubmission,
+  substance,
   tagSubject,
 } from '../index.js';
 
@@ -218,6 +219,25 @@ describe('content scoring', () => {
     expect(scored.signals).toContain('contentless_request');
     expect(scored.signals).toContain('noisy_mail_host');
     expect(scored.signals).toContain('name_email_mismatch');
+  });
+
+  const template =
+    'Hello, I have a few questions about pricing, availability, and the general process of working with you. Please let me know what details you need from me to proceed. Thanks!';
+
+  test('flags the pricing/availability/process template', () => {
+    expect(scoreSubmission({ message: template }).signals).toContain('contentless_request');
+  });
+
+  test('substance() of the template is empty', () => {
+    expect(substance(template)).toBe('');
+  });
+
+  test('substance() keeps the part of a real request that says something', () => {
+    const real = `${template}\nI want a booking app for my dog grooming shop with SMS reminders.`;
+    expect(substance(real)).toBe(
+      'I want a booking app for my dog grooming shop with SMS reminders.',
+    );
+    expect(substance(human.message)).toBe(human.message.replace(/\s+/g, ' ').trim());
   });
 
   test('leaves a genuine enquiry alone', () => {
