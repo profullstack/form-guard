@@ -41,7 +41,34 @@ const CONTENTLESS_PATTERNS = [
   /\bsend me (?:more )?(?:info|information|details)\b/i,
   /\bi am interested in your (?:services|offer|company|website)\b/i,
   /\bcan you (?:tell|give) me more\b/i,
+  // The "pricing, availability, process" template that hits every order form:
+  // "I have a few questions about pricing, availability, and the general
+  // process of working with you. Please let me know what details you need."
+  /\b(?:a few|some|several) questions about (?:your )?(?:pricing|prices|rates|costs?|availability|services)\b/i,
+  /\b(?:the )?(?:general |overall )?process of working with you\b/i,
+  /\blet me know what (?:details|information|info) you (?:need|require)\b/i,
 ];
+
+/** Sentences that are pure courtesy: a greeting, a thank-you, a sign-off. */
+const PLEASANTRY =
+  /^(?:hello|hi|hey|dear\b.*|good (?:morning|afternoon|evening)|greetings|thanks?(?: you)?(?: so much| very much| in advance)?|regards|best(?: regards)?|cheers|sincerely)\W*$/i;
+
+/**
+ * What is left of a message once its contentless sentences and pleasantries
+ * are taken out: the part that says something.
+ *
+ * A form that asks for something specific (an app idea, a bug, an address)
+ * can treat an empty remainder as "nothing was asked for": the canned
+ * enquiry template has no remainder, a real request still does even when it
+ * opens with "I have a few questions about pricing".
+ */
+export function substance(message = '') {
+  return String(message ?? '')
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((s) => s.trim())
+    .filter((s) => s && !PLEASANTRY.test(s) && !CONTENTLESS_PATTERNS.some((re) => re.test(s)))
+    .join(' ');
+}
 
 const URL_PATTERN = /\b(?:https?:\/\/|www\.)\S+/i;
 const CYRILLIC = /[Ѐ-ӿ]/;

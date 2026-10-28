@@ -160,6 +160,23 @@ window of silence.
 Pass a `store` with `take(key, windowMs, now)` and `reset(key)` to back it
 with Redis or a Durable Object when you run more than one instance.
 
+## Forms that ask for something specific
+
+A contact form has to accept "please tell me more". An order form, a bug
+report or a build request does not: it asked for an idea, a repro, an
+address. `substance(message)` returns the message minus its contentless
+sentences (the "I have a few questions about pricing, availability, and the
+general process of working with you" template) and its pleasantries. An empty
+result means nothing was asked for, so the form can quarantine it instead of
+acting on it, while a real request that happens to open with the template
+still has a remainder.
+
+```js
+import { substance } from '@profullstack/form-guard';
+
+if (substance(form.idea).length < 20) return quarantine(); // no invoice, no email
+```
+
 ## Submission campaigns (directories, listings, sign-up sheets)
 
 Everything above judges one request. A submission campaign passes all of it: it
